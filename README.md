@@ -1,37 +1,231 @@
-## Welcome to GitHub Pages
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<link rel="stylesheet" href="">
+	<style>
+	  <style>
 
-You can use the [editor on GitHub](https://github.com/haobeiping/believe.github.io/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+*{margin: 0;padding: 0;}
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+html,body{height: 100%;}
 
-### Markdown
+body{background: linear-gradient(to bottom, #131313 0%,#02101c 100%);}
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+.canvas-box{position: fixed;left: 0;top: 0;z-index: -1;}
 
-```markdown
-Syntax highlighted code block
+.box{position: absolute;z-index: 10;color:#fff;font-family: Arial;left: 50%;top:50%;transform: translate(-50%,-50%);text-align: center;}
 
-# Header 1
-## Header 2
-### Header 3
+a:link,a:hover,a:visited,a:active{text-decoration: none;color: inherit;display: block;}
 
-- Bulleted
-- List
+a{margin: 30px 0;font-size: 20px;}
 
-1. Numbered
-2. List
+</style>	
+	</style>
+</head>
+<body>
+	<div class="canvas-box">
 
-**Bold** and _Italic_ and `Code` text
+<canvas id="canvas">你的浏览器不支持canvas</canvas>
 
-[Link](url) and ![Image](src)
-```
+</div>
+</body>
+</html>
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+<script>
 
-### Jekyll Themes
+var WINDOW_WIDTH = document.body.offsetWidth;
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/haobeiping/believe.github.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+var WINDOW_HEIGHT = document.body.offsetHeight;
 
-### Support or Contact
+var canvas,context;
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+var num = 500;
+
+var stars = [];
+
+var mouseX = WINDOW_WIDTH/2;
+
+var mouseY = WINDOW_HEIGHT/2;
+
+var rnd;
+
+window.onload = function(){
+
+canvas = document.getElementById('canvas');
+
+canvas.width = WINDOW_WIDTH;
+
+canvas.height = WINDOW_HEIGHT;
+
+context = canvas.getContext('2d');
+
+addStar();
+
+setInterval(render,33);
+
+liuxing();
+
+// render();
+
+document.body.addEventListener('mousemove',mouseMove);
+
+}
+
+function liuxing(){
+
+var time = Math.round(Math.random()*3000+33);
+
+setTimeout(function(){
+
+rnd = Math.ceil(Math.random()*stars.length)
+
+liuxing();
+
+},time)
+
+}
+
+function mouseMove(e){
+
+mouseX = e.clientX;
+
+mouseY = e.clientY;
+
+}
+
+function render(){
+
+context.fillStyle = 'rgba(0,0,0,0.1)';
+
+context.fillRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT);
+
+for(var i =0; i<num ; i++){
+
+var star = stars[i];
+
+if(i == rnd){
+
+star.vx = -5;
+
+star.vy = 20;
+
+context.beginPath();
+
+context.strokeStyle = 'rgba(255,255,255,'+star.alpha+')';
+
+context.lineWidth = star.r;
+
+context.moveTo(star.x,star.y);
+
+context.lineTo(star.x+star.vx,star.y+star.vy);
+
+context.stroke();
+
+context.closePath();
+
+}
+
+star.alpha += star.ra;
+
+if(star.alpha<=0){
+
+star.alpha = 0;
+
+star.ra = -star.ra;
+
+star.vx = Math.random()*0.2-0.1;
+
+star.vy = Math.random()*0.2-0.1;
+
+}else if(star.alpha>1){
+
+star.alpha = 1;
+
+star.ra = -star.ra
+
+}
+
+star.x += star.vx;
+
+if(star.x>=WINDOW_WIDTH){
+
+star.x = 0;
+
+}else if(star.x<0){
+
+star.x = WINDOW_WIDTH;
+
+star.vx = Math.random()*0.2-0.1;
+
+star.vy = Math.random()*0.2-0.1;
+
+}
+
+star.y += star.vy;
+
+if(star.y>=WINDOW_HEIGHT){
+
+star.y = 0;
+
+star.vy = Math.random()*0.2-0.1;
+
+star.vx = Math.random()*0.2-0.1;
+
+}else if(star.y<0){
+
+star.y = WINDOW_HEIGHT;
+
+}
+
+context.beginPath();
+
+var bg = context.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.r);
+
+bg.addColorStop(0,'rgba(255,255,255,'+star.alpha+')')
+
+bg.addColorStop(1,'rgba(255,255,255,0)')
+
+context.fillStyle  = bg;
+
+context.arc(star.x,star.y, star.r, 0, Math.PI*2, true);
+
+context.fill();
+
+context.closePath();
+
+}
+
+}
+
+function addStar(){
+
+for(var i = 0; i<num ; i++){
+
+var aStar = {
+
+x:Math.round(Math.random()*WINDOW_WIDTH),
+
+y:Math.round(Math.random()*WINDOW_HEIGHT),
+
+r:Math.random()*3,
+
+ra:Math.random()*0.05,
+
+alpha:Math.random(),
+
+vx:Math.random()*0.2-0.1,
+
+vy:Math.random()*0.2-0.1
+
+}
+
+stars.push(aStar);
+
+}
+
+}
+
+</script>
